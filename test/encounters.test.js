@@ -62,7 +62,7 @@ test('fluxo separa timestamps, aceita CRLF e rejeita duplicatas e desordem', asy
     await writeFile(input, [header, row(1, '05'), row(2, '00')].join('\n'));
     await assert.rejects(processDataset(input, output), /ordem crescente/);
     assert.deepEqual(JSON.parse(await readFile(output, 'utf8')), []);
-  } finally { await rm(directory, { recursive: true, force: true }); }
+  } finally { await rm(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 }); }
 });
 
 

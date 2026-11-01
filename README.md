@@ -2,6 +2,10 @@
 
 Programa desenvolvido em **JavaScript com Node.js** para identificar encontros entre pessoas a partir de registros de localização. Recebe arquivos de texto e gera arquivos JSON com os participantes, o horário, as coordenadas e a distância de cada encontro.
 
+## Sobre esta branch
+
+Esta é uma candidata de desempenho, mantida separada da `main`. Reaproveita o texto dos timestamps repetidos, converte latitude e longitude diretamente da linha e usa blocos de leitura de 4 MiB. Os comandos e o formato dos arquivos permanecem iguais. Veja [as diferenças em relação à main](docs/DIFERENCAS-CANDIDATA.md), incluindo medições e consumo de memória.
+
 ## O que o programa faz
 
 Compara posições registradas no mesmo instante e identifica distâncias **menores que 20 metros**, classificando cada encontro em um dos tipos:
@@ -155,7 +159,7 @@ Quando não há encontros, o arquivo contém uma lista vazia: `[]`. Um mesmo par
 
 ## Como o processamento foi feito e por quê
 
-1. **Leitura em blocos:** o arquivo é lido aos poucos, em blocos de 1 MiB, para processar arquivos grandes sem mantê-los inteiros na memória.
+1. **Leitura em blocos:** o arquivo é lido aos poucos, em blocos de 4 MiB, para processar arquivos grandes sem mantê-los inteiros na memória.
 2. **Validação dos dados:** o programa confere o cabeçalho, os campos, as coordenadas, os IDs, os booleanos e o formato dos horários. Também verifica a ordem temporal e a ausência de IDs repetidos no mesmo instante.
 3. **Agrupamento por horário:** apenas as posições de um mesmo instante ficam reunidas para comparação. Isso atende à regra do desafio e reduz o consumo de memória.
 4. **Ordenação por latitude:** as posições de cada grupo são ordenadas de sul para norte. Quando a diferença de latitude já impossibilita uma distância menor que 20 metros, os pares seguintes são descartados dessa comparação.
@@ -172,14 +176,16 @@ Os arquivos são processados um de cada vez para controlar o consumo de memória
 
 Posições sem restrições usam `null`, evitando criar um `Set` e arrays vazios para cada linha. Quando há restrições, a função `parseRestrictions` valida e converte cada ID uma única vez e o adiciona diretamente ao `Set`, sem criar um segundo array numérico. A classificação consulta essa coleção somente quando ela existe.
 
-Os sete campos de cada linha são extraídos diretamente com `indexOf` e `slice`, sem criar o array intermediário de `split`. Os limites recebem nomes correspondentes aos campos e a função `findSeparator` rejeita separadores ausentes. Uma verificação final rejeita colunas extras.
+Os separadores dos sete campos são localizados com `indexOf`. Latitude e longitude são lidas diretamente entre esses índices, sem criar substrings para esses campos no caminho comum. Valores com mais de 15 dígitos usam o conversor nativo `Number` após a validação. Os demais campos usam `slice` quando necessário, sem criar o array intermediário de `split`. Os limites recebem nomes correspondentes aos campos e a função `findSeparator` rejeita separadores ausentes. Uma verificação final rejeita colunas extras.
+
+Quando o texto do timestamp é idêntico ao anterior, a string já existente é reaproveitada; mudanças de horário geram uma nova string. O formato continua verificado em cada linha e o calendário em cada mudança de grupo.
 
 A expressão regular do timestamp é reutilizada e os valores booleanos são comparados diretamente, sem um array temporário. Essas mudanças reduzem objetos transitórios e o trabalho de gerenciamento de memória, preservando as validações, a fórmula de Haversine e o formato dos resultados.
 
 
 ## Verificações realizadas
 
-Foram criados testes automatizados para classificação dos encontros, limite de distância, pares únicos, restrições de medidas protetivas, separação de horários e leitura dos arquivos. A busca por latitude também foi comparada com uma busca que verifica todos os pares em amostras determinísticas, incluindo posições próximas dos polos.
+Os 12 testes automatizados incluem conversão numérica direta, preservação de zero negativo, fallback de números longos e reaproveitamento seguro de timestamps, além dos testes de calendário e das regras existentes. Foram criados testes automatizados para classificação dos encontros, limite de distância, pares únicos, restrições de medidas protetivas, separação de horários e leitura dos arquivos. A busca por latitude também foi comparada com uma busca que verifica todos os pares em amostras determinísticas, incluindo posições próximas dos polos.
 
 Para executar esses testes:
 
@@ -204,12 +210,12 @@ Os tempos abaixo correspondem à execução local registrada em `outputs/metrics
 | Dataset | Posições | Encontros | Tempo |
 | --- | ---: | ---: | ---: |
 | 1 | 5.000 | 4 | 16 ms |
-| 2 | 25.000 | 6 | 33 ms |
-| 3 | 100.000 | 10 | 93 ms |
-| 4 | 400.020 | 15 | 315 ms |
-| 5 | 1.000.000 | 21 | 815 ms |
-| 6 | 8.000.000 | 27 | 6.263 ms |
-| 7 | 12.000.000 | 35 | 9.294 ms |
+| 2 | 25.000 | 6 | 29 ms |
+| 3 | 100.000 | 10 | 91 ms |
+| 4 | 400.020 | 15 | 337 ms |
+| 5 | 1.000.000 | 21 | 790 ms |
+| 6 | 8.000.000 | 27 | 5.960 ms |
+| 7 | 12.000.000 | 35 | 8.621 ms |
 
 Os tempos incluem leitura, processamento e gravação. Representam uma única execução e variam conforme o computador e as condições do disco. Os datasets 3 a 7 foram processados com o mesmo algoritmo, mas não possuem respostas oficiais fornecidas para comparação.
 

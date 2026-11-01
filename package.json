@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "description": "Detecção de encontros geográficos em fluxo com Node.js",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node src/cli.js",
-    "test": "node --test",
+    "test": "node --test test/calendar.test.js test/encounters.test.js test/optimization.test.js",
     "validate": "node src/validate.js"
   }
 }

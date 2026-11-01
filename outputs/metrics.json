@@ -13,7 +13,7 @@
     "rows": 25000,
     "timestamps": 1250,
     "encounters": 6,
-    "elapsedMs": 33
+    "elapsedMs": 29
   },
   {
     "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset3.txt",
@@ -21,7 +21,7 @@
     "rows": 100000,
     "timestamps": 2500,
     "encounters": 10,
-    "elapsedMs": 93
+    "elapsedMs": 91
   },
   {
     "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset4.txt",
@@ -29,7 +29,7 @@
     "rows": 400020,
     "timestamps": 6667,
     "encounters": 15,
-    "elapsedMs": 315
+    "elapsedMs": 337
   },
   {
     "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset5.txt",
@@ -37,7 +37,7 @@
     "rows": 1000000,
     "timestamps": 12500,
     "encounters": 21,
-    "elapsedMs": 815
+    "elapsedMs": 790
   },
   {
     "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset6.txt",
@@ -45,7 +45,7 @@
     "rows": 8000000,
     "timestamps": 80000,
     "encounters": 27,
-    "elapsedMs": 6263
+    "elapsedMs": 5960
   },
   {
     "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset7.txt",
@@ -53,6 +53,6 @@
     "rows": 12000000,
     "timestamps": 100000,
     "encounters": 35,
-    "elapsedMs": 9294
+    "elapsedMs": 8621
   }
 ]

@@ -7,11 +7,11 @@ import { detectEncounters } from './encounters.js';
 const HEADER = 'idMonitorado;faccaoMonitorado;timestamp;latitude;longitude;medidaProtetiva;idsRestricaoMedida';
 const unquote = value => value.startsWith('"') && value.endsWith('"') ? value.slice(1, -1) : value;
 const INTEGER = /^-?\d+$/;
-const DECIMAL = /^-?\d+(?:\.\d+)?$/;
 const TIMESTAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
 const INVALID_COLUMNS = 'Esperadas sete colunas separadas por ponto e vírgula.';
 const INVALID_POSITION = 'ID, coordenadas, timestamp, booleano ou restrições inválidos.';
 
+const READ_BLOCK_SIZE = 4 * 1024 * 1024;
 const DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 // O formato já foi conferido por parsePosition. Não cria Date nem converte fusos.
@@ -29,6 +29,29 @@ function validateCalendar(timestamp) {
       || hour > 23 || minute > 59 || second > 59) {
     throw new Error('Data ou horário inválido no timestamp: ' + timestamp);
   }
+}
+
+function readDecimal(line, start, end) {
+  let cursor = start;
+  const negative = line.charCodeAt(cursor) === 45;
+  if (negative) cursor++;
+  let mantissa = 0, digits = 0, fractionDigits = 0, fraction = false;
+  for (; cursor < end; cursor++) {
+    const code = line.charCodeAt(cursor);
+    if (code === 46 && !fraction && digits > 0 && cursor + 1 < end) {
+      fraction = true;
+      continue;
+    }
+    if (code < 48 || code > 57) throw new Error(INVALID_POSITION);
+    mantissa = mantissa * 10 + code - 48;
+    digits++;
+    if (fraction) fractionDigits++;
+  }
+  if (digits === 0) throw new Error(INVALID_POSITION);
+  // Números longos preservam o conversor nativo para evitar perda de precisão.
+  if (digits > 15 || fractionDigits > 15) return Number(line.slice(start, end));
+  const magnitude = mantissa / 10 ** fractionDigits;
+  return negative ? -magnitude : magnitude;
 }
 
 function parseRestrictions(rawRestrictions) {
@@ -53,7 +76,7 @@ function findSeparator(line, start) {
   return separator;
 }
 
-export function parsePosition(line) {
+export function parsePosition(line, previousTimestamp = null) {
   // Localiza as seis divisões sem criar um array de campos por posição.
   const idEnd = findSeparator(line, 0);
   const factionEnd = findSeparator(line, idEnd + 1);
@@ -67,16 +90,20 @@ export function parsePosition(line) {
 
   const rawId = line.slice(0, idEnd);
   const faction = line.slice(idEnd + 1, factionEnd);
-  const rawTimestamp = line.slice(factionEnd + 1, timestampEnd);
-  const rawLat = line.slice(timestampEnd + 1, latitudeEnd);
-  const rawLon = line.slice(latitudeEnd + 1, longitudeEnd);
+  const quotedTimestamp = line.charCodeAt(factionEnd + 1) === 34 && line.charCodeAt(timestampEnd - 1) === 34;
+  const timestampStart = factionEnd + 1 + (quotedTimestamp ? 1 : 0);
+  const timestampLength = timestampEnd - factionEnd - 1 - (quotedTimestamp ? 2 : 0);
+  const repeatedTimestamp = previousTimestamp !== null && timestampLength === previousTimestamp.length
+    && line.startsWith(previousTimestamp, timestampStart);
+
   const rawProtected = line.slice(longitudeEnd + 1, protectedEnd);
   const rawRestrictions = line.slice(protectedEnd + 1);
-  const id = Number(rawId), lat = Number(rawLat), lon = Number(rawLon);
-  const timestamp = unquote(rawTimestamp);
+  const id = Number(rawId);
+  const lat = readDecimal(line, timestampEnd + 1, latitudeEnd);
+  const lon = readDecimal(line, latitudeEnd + 1, longitudeEnd);
+  const timestamp = repeatedTimestamp ? previousTimestamp : line.slice(timestampStart, timestampStart + timestampLength);
   if (
     !INTEGER.test(rawId) || !Number.isSafeInteger(id)
-    || !DECIMAL.test(rawLat) || !DECIMAL.test(rawLon)
     || !Number.isFinite(lat) || Math.abs(lat) > 90
     || !Number.isFinite(lon) || Math.abs(lon) > 180
     || !TIMESTAMP.test(timestamp)
@@ -107,7 +134,7 @@ export async function processDataset(input, output) {
       return;
     }
     if (!line.trim()) return;
-    const position = parsePosition(line);
+    const position = parsePosition(line, timestamp);
     if (timestamp !== null && position.timestamp < timestamp) throw new Error('Os timestamps devem estar em ordem crescente. Ordene o arquivo antes de processar.');
     if (position.timestamp !== timestamp) {
       validateCalendar(position.timestamp);
@@ -118,7 +145,7 @@ export async function processDataset(input, output) {
   };
   try {
     await destination.write('[');
-    for await (const chunk of createReadStream(input, { encoding: 'utf8', highWaterMark: 1024 * 1024 })) {
+    for await (const chunk of createReadStream(input, { encoding: 'utf8', highWaterMark: READ_BLOCK_SIZE })) {
       const text = pending + chunk;
       let start = 0, end;
       while ((end = text.indexOf('\n', start)) !== -1) {
