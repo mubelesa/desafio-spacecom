@@ -199,17 +199,17 @@ Essa verificação compara participantes, tipos, horários, coordenadas e distâ
 
 ## Resultados do processamento
 
-Os sete datasets foram processados em uma execução local com Node.js 24.21.0:
+Os tempos abaixo correspondem à execução local registrada em `outputs/metrics.json`, com Node.js 24.21.0:
 
 | Dataset | Posições | Encontros | Tempo |
 | --- | ---: | ---: | ---: |
-| 1 | 5.000 | 4 | 17 ms |
-| 2 | 25.000 | 6 | 31 ms |
-| 3 | 100.000 | 10 | 106 ms |
-| 4 | 400.020 | 15 | 411 ms |
-| 5 | 1.000.000 | 21 | 977 ms |
-| 6 | 8.000.000 | 27 | 7.745 ms |
-| 7 | 12.000.000 | 35 | 11.453 ms |
+| 1 | 5.000 | 4 | 16 ms |
+| 2 | 25.000 | 6 | 33 ms |
+| 3 | 100.000 | 10 | 93 ms |
+| 4 | 400.020 | 15 | 315 ms |
+| 5 | 1.000.000 | 21 | 815 ms |
+| 6 | 8.000.000 | 27 | 6.263 ms |
+| 7 | 12.000.000 | 35 | 9.294 ms |
 
 Os tempos incluem leitura, processamento e gravação. Representam uma única execução e variam conforme o computador e as condições do disco. Os datasets 3 a 7 foram processados com o mesmo algoritmo, mas não possuem respostas oficiais fornecidas para comparação.
 
