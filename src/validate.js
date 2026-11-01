@@ -12,7 +12,7 @@ for (const number of [1, 2]) {
     const match = indexed.get(key(reference));
     assert.ok(match, `Encontro ausente: ${key(reference)}`);
     assert.deepEqual(match.posicoes, reference.posicoes);
-    assert.ok(Math.abs(match.distanciaMetros - reference.distanciaMetros) < 1e-7, 'Distância diferente');
+    assert.equal(match.distanciaMetros, reference.distanciaMetros, `Distância diferente: ${key(reference)}`);
   }
   console.log(`Dataset ${number}: ${actual.length}/${expected.length} encontros corretos, sem extras.`);
 }

@@ -64,3 +64,9 @@ test('fluxo separa timestamps, aceita CRLF e rejeita duplicatas e desordem', asy
     assert.deepEqual(JSON.parse(await readFile(output, 'utf8')), []);
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
+
+
+test('Haversine reproduz exatamente as distâncias oficiais com diferenças de ponto flutuante', () => {
+  assert.equal(haversine(position(10, -14.62732, -36.31859), position(11, -14.62731, -36.31869)), 10.81640474094182);
+  assert.equal(haversine(position(12, -7.33193, -65.93130), position(13, -7.33197, -65.93137)), 8.909619516337239);
+});

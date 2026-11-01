@@ -186,7 +186,7 @@ Para repetir essa comparação, coloque `respostas1.json` e `respostas2.json` na
 npm run validate
 ```
 
-Essa verificação compara participantes, tipos, horários, coordenadas e distâncias. A tolerância numérica usada na comparação das distâncias não altera a regra estrita dos 20 metros. Os arquivos de resposta de referência não estão incluídos no ZIP.
+Essa verificação compara participantes, tipos, horários, coordenadas e distâncias. As distâncias são comparadas por igualdade numérica exata com os gabaritos, sem tolerância ou arredondamento. A implementação utiliza Haversine com arco-seno e a ordem de conversão para radianos que reproduziu os dez valores oficiais no ambiente testado. Os arquivos de resposta de referência não estão incluídos no ZIP.
 
 ## Resultados do processamento
 

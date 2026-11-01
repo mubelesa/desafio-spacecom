@@ -5,12 +5,14 @@ const RADIANS = Math.PI / 180;
 const LATITUDE_WINDOW = DISTANCE_LIMIT / EARTH_RADIUS / RADIANS + 1e-10;
 
 export function haversine(a, b) {
-  const latitudeDelta = (b.lat - a.lat) * RADIANS;
-  const longitudeDelta = (b.lon - a.lon) * RADIANS;
+  const latitudeDelta = (b.lat - a.lat) * Math.PI / 180;
+  const longitudeDelta = (b.lon - a.lon) * Math.PI / 180;
   const value = Math.sin(latitudeDelta / 2) ** 2
     + Math.cos(a.lat * RADIANS) * Math.cos(b.lat * RADIANS)
     * Math.sin(longitudeDelta / 2) ** 2;
-  return 2 * EARTH_RADIUS * Math.atan2(Math.sqrt(Math.min(1, value)), Math.sqrt(Math.max(0, 1 - value)));
+  // Haversine com arco-seno; mantém a ordem numérica compatível com os exemplos oficiais.
+  const centralAngle = 2 * Math.asin(Math.sqrt(Math.max(0, Math.min(1, value))));
+  return EARTH_RADIUS * centralAngle;
 }
 
 export function classify(a, b) {
