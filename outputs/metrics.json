@@ -1,58 +1,58 @@
 [
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset1.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset1.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset1.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset1.json",
     "rows": 5000,
     "timestamps": 500,
     "encounters": 4,
-    "elapsedMs": 18
+    "elapsedMs": 16
   },
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset2.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset2.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset2.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset2.json",
     "rows": 25000,
     "timestamps": 1250,
     "encounters": 6,
-    "elapsedMs": 50
+    "elapsedMs": 33
   },
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset3.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset3.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset3.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset3.json",
     "rows": 100000,
     "timestamps": 2500,
     "encounters": 10,
-    "elapsedMs": 138
+    "elapsedMs": 93
   },
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset4.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset4.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset4.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset4.json",
     "rows": 400020,
     "timestamps": 6667,
     "encounters": 15,
-    "elapsedMs": 501
+    "elapsedMs": 315
   },
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset5.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset5.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset5.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset5.json",
     "rows": 1000000,
     "timestamps": 12500,
     "encounters": 21,
-    "elapsedMs": 1258
+    "elapsedMs": 815
   },
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset6.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset6.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset6.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset6.json",
     "rows": 8000000,
     "timestamps": 80000,
     "encounters": 27,
-    "elapsedMs": 9980
+    "elapsedMs": 6263
   },
   {
-    "input": "D:\\Projetos\\desafio-spacecom\\inputs\\dataset7.txt",
-    "output": "D:\\Projetos\\desafio-spacecom\\outputs\\dataset7.json",
+    "input": "D:\\Projetos\\desafio-spacecom-publicacao\\inputs\\dataset7.txt",
+    "output": "D:\\Projetos\\desafio-spacecom-publicacao\\outputs\\dataset7.json",
     "rows": 12000000,
     "timestamps": 100000,
     "encounters": 35,
-    "elapsedMs": 14477
+    "elapsedMs": 9294
   }
 ]

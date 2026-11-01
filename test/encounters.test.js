@@ -70,3 +70,39 @@ test('Haversine reproduz exatamente as distâncias oficiais com diferenças de p
   assert.equal(haversine(position(10, -14.62732, -36.31859), position(11, -14.62731, -36.31869)), 10.81640474094182);
   assert.equal(haversine(position(12, -7.33193, -65.93130), position(13, -7.33197, -65.93137)), 8.909619516337239);
 });
+
+
+test('parser não cria coleção vazia e preserva restrições preenchidas', () => {
+  const row = (protectedValue, restrictions) => '1;;"2024-01-01 00:00:00";0;0;' + protectedValue + ';' + restrictions;
+  assert.equal(parsePosition(row('false', '')).restrictions, null);
+  const victim = parsePosition(row('true', '""'));
+  assert.equal(victim.restrictions, null);
+  assert.equal(detect([victim, position(2)]).length, 0);
+  assert.deepEqual([...parsePosition(row('true', '"2,3,2"')).restrictions], [2, 3]);
+  assert.equal(detect([parsePosition(row('true', '"2"')), position(2)])[0].tipo, 'protetiva');
+  assert.throws(() => parsePosition(row('false', '"2,"')), /inválidos/);
+  assert.throws(() => parsePosition(row('TRUE', '')), /inválidos/);
+  assert.throws(() => parsePosition(row('true', '9007199254740992')), /inválidos/);
+});
+
+
+test('parser exige exatamente sete colunas e preserva campos vazios e opcionais', () => {
+  const row = '12;;"2024-01-01 00:00:00";-7.33193;-65.93130;true;"13,15"';
+  const parsed = parsePosition(row);
+  assert.equal(parsed.id, 12);
+  assert.equal(parsed.faction, '');
+  assert.equal(parsed.timestamp, '2024-01-01 00:00:00');
+  assert.equal(parsed.lat, -7.33193);
+  assert.equal(parsed.lon, -65.93130);
+  assert.equal(parsed.protected, true);
+  assert.deepEqual([...parsed.restrictions], [13, 15]);
+  assert.equal(parsePosition('1;2;2024-01-01 00:00:00;0;0;false;').restrictions, null);
+  assert.equal(parsePosition('1;2;2024-01-01 00:00:00;0;0;false;').faction, '2');
+  const fields = row.split(';');
+  for (let count = 0; count < 7; count++) {
+    assert.throws(() => parsePosition(fields.slice(0, count).join(';')), /sete colunas/);
+  }
+  assert.throws(() => parsePosition(row + ';'), /sete colunas/);
+  assert.throws(() => parsePosition(row + ';extra'), /sete colunas/);
+  assert.throws(() => parsePosition('1;;2024-01-01 00:00:00;;0;false;'), /inválidos/);
+});
