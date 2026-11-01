@@ -124,7 +124,7 @@ Cada linha seguinte representa a posição de uma pessoa em um horário:
 
 As linhas devem estar em ordem de data e horário, do mais antigo para o mais recente. Uma mesma pessoa pode aparecer em vários horários, mas seu ID não pode se repetir no mesmo instante. Os arquivos podem usar quebras de linha do Windows ou do Linux.
 
-O programa compara o horário exatamente como informado, sem conversão de fuso. Posições com cinco segundos de diferença não são comparadas, mesmo que estejam no mesmo local.
+O programa valida o calendário e o horário: aceita anos de 0001 a 9999, dias válidos para cada mês (incluindo anos bissextos), horas de 00 a 23 e minutos e segundos de 00 a 59. Essa validação é realizada uma vez quando o timestamp muda; o formato continua sendo conferido em cada linha. O programa compara o horário exatamente como informado, sem conversão de fuso. Posições com cinco segundos de diferença não são comparadas, mesmo que estejam no mesmo local.
 
 ## Formato dos resultados
 
@@ -167,6 +167,15 @@ Quando não há encontros, o arquivo contém uma lista vazia: `[]`. Um mesmo par
 A abordagem por latitude foi escolhida por reduzir as comparações e permitir uma implementação simples de conferir. O filtro também funciona perto dos polos e na passagem entre longitudes de 180 e -180 graus. Quando muitas pessoas têm latitudes próximas, mais pares precisam ser examinados; o desempenho depende da distribuição das posições.
 
 Os arquivos são processados um de cada vez para controlar o consumo de memória e o acesso ao disco.
+
+### Redução de alocações na leitura
+
+Posições sem restrições usam `null`, evitando criar um `Set` e arrays vazios para cada linha. Quando há restrições, a função `parseRestrictions` valida e converte cada ID uma única vez e o adiciona diretamente ao `Set`, sem criar um segundo array numérico. A classificação consulta essa coleção somente quando ela existe.
+
+Os sete campos de cada linha são extraídos diretamente com `indexOf` e `slice`, sem criar o array intermediário de `split`. Os limites recebem nomes correspondentes aos campos e a função `findSeparator` rejeita separadores ausentes. Uma verificação final rejeita colunas extras.
+
+A expressão regular do timestamp é reutilizada e os valores booleanos são comparados diretamente, sem um array temporário. Essas mudanças reduzem objetos transitórios e o trabalho de gerenciamento de memória, preservando as validações, a fórmula de Haversine e o formato dos resultados.
+
 
 ## Verificações realizadas
 

@@ -16,7 +16,7 @@ export function haversine(a, b) {
 }
 
 export function classify(a, b) {
-  if ((a.protected && a.restrictions.has(b.id)) || (b.protected && b.restrictions.has(a.id))) return 'protetiva';
+  if ((a.protected && a.restrictions?.has(b.id)) || (b.protected && b.restrictions?.has(a.id))) return 'protetiva';
   // Vítimas só participam de encontros com seus respectivos agressores.
   if (a.protected || b.protected) return null;
   if (a.faction !== '' && a.faction === b.faction) return 'faccao';
