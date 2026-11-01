@@ -1,0 +1,13 @@
+{
+  "name": "spacecom-encontros",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Detecção de encontros geográficos em fluxo com Node.js",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test",
+    "validate": "node src/validate.js"
+  }
+}
